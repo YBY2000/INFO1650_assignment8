@@ -15,11 +15,13 @@ module.exports = (app) => {
             if (!fullName || !email || !password) {
                 return res.status(400).json({ message: 'Please provide all required fields.' });
             }
+            console.log('not empty');
             
             // Email validation
             if (!validateEmail(email)) {
                 return res.status(400).json({ message: 'Invalid email address.' });
             }
+            console.log('email good');
 
             // Full Name validation
             if (fullName.trim() === '') {
@@ -28,6 +30,7 @@ module.exports = (app) => {
             if (!validateFullname(fullName)) {
                 return res.status(400).json({ message: 'Full name can only have empty space and English letters.' });
             }
+            console.log('full name good');
 
             // Password strength validation
             if (!validatePassword(password)) {
@@ -36,19 +39,22 @@ module.exports = (app) => {
                         'Password must be 8 to 15 characters long and include at least one uppercase letter, one lowercase letter, and one number.',
                 });
             }
+            console.log('pwd good');
+
             // Hash the password using bcrypt
             const hashedPassword = await bcrypt.hash(password, 10);
+            console.log('Origianl Password:', password);
 
-            // // Create a new user
-            // const newUser = new User({
-            //     fullName,
-            //     email,
-            //     password: hashedPassword,
-            // });
+            // Create a new user
+            const newUser = new User({
+                fullName,
+                email,
+                password: hashedPassword,
+            });
 
-            const newUser = new User({ fullName, email, password });
+            // const newUser = new User({ fullName, email, password });
             await newUser.save();
-            res.json({ message: 'User created successfully' });
+            res.json({ message: 'User created successfully!' });
         } catch (error) {
             res.status(400).json({ message: 'Error saving user to the database.' });
         }
@@ -88,8 +94,13 @@ module.exports = (app) => {
                 });
             }
 
+            // Hash the password using bcrypt
+            console.log('Origianl Password:', password);
+            const hashedPassword = await bcrypt.hash(password, 10);
+            console.log('Hashed Password:', hashedPassword);
+
             user.fullName = fullName;
-            user.password = password;
+            user.password = hashedPassword;
             await user.save();
 
             res.json({ message: 'User updated successfully' });
