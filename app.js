@@ -4,11 +4,10 @@ const bodyParser = require('body-parser');
 const db = require('./db');
 const User = require('./app/models/User');
 const routes = require('./app/routes/routes');
+const bcrypt = require('bcrypt'); 
 const port = 3000;
 
 const app = express();
-
-
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

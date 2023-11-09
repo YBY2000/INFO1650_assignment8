@@ -1,7 +1,7 @@
 const User = require('../models/User');
+const bcrypt = require('bcrypt'); 
 
 module.exports = (app) => {
-
     // server routes ===========================================================
     // handle things like api calls
     // authentication routes
@@ -36,12 +36,21 @@ module.exports = (app) => {
                         'Password must be 8 to 15 characters long and include at least one uppercase letter, one lowercase letter, and one number.',
                 });
             }
+            // Hash the password using bcrypt
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // // Create a new user
+            // const newUser = new User({
+            //     fullName,
+            //     email,
+            //     password: hashedPassword,
+            // });
 
             const newUser = new User({ fullName, email, password });
             await newUser.save();
             res.json({ message: 'User created successfully' });
         } catch (error) {
-            res.status(400).json({ message: 'Invalid email or password' });
+            res.status(400).json({ message: 'Error saving user to the database.' });
         }
     });
 
