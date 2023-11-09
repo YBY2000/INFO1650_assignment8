@@ -11,7 +11,31 @@ module.exports = (app) => {
     app.post('/user/create', async (req, res) => {
         try {
             const { fullName, email, password } = req.body;
-            // Implement password validation here
+            // Empty Validation
+            if (!fullName || !email || !password) {
+                return res.status(400).json({ message: 'Please provide all required fields.' });
+            }
+            
+            // Email validation
+            if (!validateEmail(email)) {
+                return res.status(400).json({ message: 'Invalid email address.' });
+            }
+
+            // Full Name validation
+            if (fullName.trim() === '') {
+                return res.status(400).json({ message: 'Full Name cannot be empty.' });
+            }
+            if (!validateFullname(fullName)) {
+                return res.status(400).json({ message: 'Full name can only have empty space and English letters.' });
+            }
+
+            // Password strength validation
+            if (!validatePassword(password)) {
+                return res.status(400).json({
+                    message:
+                        'Password must be 8 to 15 characters long and include at least one uppercase letter, one lowercase letter, and one number.',
+                });
+            }
 
             const newUser = new User({ fullName, email, password });
             await newUser.save();
@@ -34,7 +58,26 @@ module.exports = (app) => {
                 return res.status(404).json({ message: 'User not found! Please Check your Email' });
             }
 
-            // Implement full name and password validation here
+            // Empty Validation
+            if (!fullName || !email || !password) {
+                return res.status(400).json({ message: 'Please provide all required fields.' });
+            }
+            
+            // Full Name validation
+            if (fullName.trim() === '') {
+                return res.status(400).json({ message: 'Full Name cannot be empty.' });
+            }
+            if (!validateFullname(fullName)) {
+                return res.status(400).json({ message: 'Full name can only have empty space and English letters.' });
+            }
+
+            // Password strength validation
+            if (!validatePassword(password)) {
+                return res.status(400).json({
+                    message:
+                        'Password must be 8 to 15 characters long and include at least one uppercase letter, one lowercase letter, and one number.',
+                });
+            }
 
             user.fullName = fullName;
             user.password = password;
@@ -72,3 +115,22 @@ module.exports = (app) => {
         }
     });
 }
+
+
+// Password validation function
+const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/;
+    return passwordRegex.test(password);
+};
+
+const validateFullname = (fullName) => {
+    const fullNameRegex = /^[a-zA-Z\s\d*]+$/;
+    return fullNameRegex.test(fullName);
+
+};
+
+const validateEmail = (email) => {
+    const emailRegex = /^(\w+\.)*\w+(@northeastern.edu)$/;
+    return emailRegex.test(email);
+
+};
